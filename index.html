@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalendarz Nawyków</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8A2BE2;
+            --primary-light: #9D4EDD;
+            --primary-dark: #6A0DAD;
+            --secondary: #C77DFF;
+            --tertiary: #E0AAFF;
+            --dark: #240046;
+            --light: #F8F9FA;
+            --success: #00850b;
+            --success-light: #00A800;
+            --warning: #FF5E5B;
+            --gray: #6C757D;
+            --light-gray: #E9ECEF;
+            --text-light: #F8F9FA;
+            --text-dark: #212529;
+            --background: #10002B;
+            --fire: #FF6B35;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding: 20px;
+            background-image: radial-gradient(circle at top right, #3C096C 0%, #10002B 70%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--tertiary);
+            position: relative;
+            padding-bottom: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+        }
+
+        .card {
+            background: rgba(67, 12, 108, 0.6);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(155, 89, 182, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .card:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .day {
+            border: 1px solid rgba(155, 89, 182, 0.3);
+            padding: 10px;
+            text-align: center;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--text-light);
+            background: rgba(67, 12, 108, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .day:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            z-index: 2;
+            background: rgba(67, 12, 108, 0.7);
+        }
+
+        .day-header {
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--text-light);
+            border: none;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .yes {
+            background: linear-gradient(135deg, #9D174D, var(--warning));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(157, 23, 77, 0.4);
+        }
+
+        .no {
+            background: linear-gradient(135deg, var(--success), var(--success-light));
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(123, 44, 191, 0.4);
+        }
+
+        .streak {
+            font-size: 1.3em;
+            margin-top: 20px;
+            padding: 25px;
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+        }
+
+        .streak strong {
+            font-weight: 700;
+            color: var(--tertiary);
+            font-size: 2em;
+            display: block;
+            margin-top: 5px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .month-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .month-header {
+            grid-column: 1 / -1;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.5em;
+            margin: 30px 0 20px;
+            color: var(--tertiary);
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .month-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+            border-radius: 2px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--tertiary);
+            font-size: 1.2em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading::after {
+            content: '';
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(155, 89, 182, 0.3);
+            border-top: 4px solid var(--tertiary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            padding: 25px;
+            background-color: rgba(157, 23, 77, 0.2);
+            border-radius: 12px;
+            color: #FF8FA3;
+            font-weight: 500;
+            border: 1px solid rgba(157, 23, 77, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(138, 43, 226, 0.4);
+            transition: all 0.4s ease;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 250px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 1px;
+        }
+
+        .refresh-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.6s;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(138, 43, 226, 0.6);
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+        }
+
+        .refresh-btn:hover::before {
+            left: 100%;
+        }
+
+        .refresh-btn svg {
+            margin-right: 12px;
+            transition: transform 0.4s ease;
+        }
+
+        .refresh-btn:hover svg {
+            transform: rotate(180deg);
+        }
+
+        .streak-item {
+            background: rgba(155, 89, 182, 0.2);
+            padding: 20px;
+            border-radius: 16px;
+            width: 45%;
+            min-width: 200px;
+            border: 1px solid rgba(155, 89, 182, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .streak-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: rgba(155, 89, 182, 0.3);
+        }
+
+        .month-nav-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .month-nav-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(138, 43, 226, 0.5);
+        }
+
+        .month-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .month-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .fire-icon {
+            color: var(--fire);
+            display: inline-block;
+            animation: flicker 1.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            25% { opacity: 0.8; }
+            50% { opacity: 0.9; }
+            75% { opacity: 0.7; }
+        }
+
+        /* Styles for date dropdown */
+        .date-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .date-dropdown {
+            background: rgba(67, 12, 108, 0.6);
+            border: 1px solid rgba(155, 89, 182, 0.3);
+            color: var(--text-light);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            outline: none;
+        }
+
+        .date-dropdown:hover, .date-dropdown:focus {
+            background: rgba(67, 12, 108, 0.8);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+            border-color: var(--secondary);
+        }
+
+        .date-dropdown option {
+            background-color: var(--dark);
+            color: var(--text-light);
+        }
+
+        .go-to-date-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .go-to-date-btn:hover {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Styles for stats counter */
+        .stats-counter {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        .stats-item {
+            background: rgba(67, 12, 108, 0.4);
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(155, 89, 182, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stats-item.success {
+            border-left: 3px solid var(--success);
+        }
+
+        .stats-item.failure {
+            border-left: 3px solid var(--warning);
+        }
+
+        .stats-item span {
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .day {
+                padding: 8px;
+                height: 45px;
+                font-size: 0.9rem;
+            }
+            
+            .streak {
+                padding: 20px;
+                font-size: 1.1em;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .streak-item {
+                width: 100%;
+            }
+
+            .date-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .date-dropdown, .go-to-date-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .day {
+                padding: 6px;
+                height: 40px;
+                font-size: 0.85rem;
+                border-radius: 8px;
+            }
+            
+            .month-header {
+                font-size: 1.2em;
+                margin: 20px 0 15px;
+            }
+            
+            .refresh-btn {
+                padding: 14px 24px;
+                font-size: 1rem;
+                max-width: 100%;
+            }
+
+            .stats-counter {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kalendarz Nawyków</h1>
+        
+        <button class="refresh-btn" onclick="loadData()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                <path d="M21 3v5h-5"></path>
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                <path d="M3 21v-5h5"></path>
+            </svg>
+            Odśwież dane
+        </button>
+        
+        <div id="date-selector" class="date-selector">
+            <!-- Date dropdowns will be inserted here -->
+        </div>
+        
+        <div id="calendar-container" class="card">
+            <div class="loading">Ładowanie danych...</div>
+        </div>
+        
+        <div id="streak-container" class="streak"></div>
+        
+        <div id="stats-counter" class="stats-counter">
+            <!-- Stats counter will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Dane z arkusza Google Sheets
+        const SPREADSHEET_ID = '1F6I-gCP93_cOgEwFKLrKFC--rv0Edgfzw9C4araj1Nk';
+        const SHEET_NAME = 'Odpowiedzi';
+        const RANGE = 'A:B';
+        
+        // Zmienne do nawigacji po miesiącach
+        let allMonthsData = [];
+        let currentMonthIndex = 0;
+        let allData = [];
+        
+        // Pobieranie danych z Google Sheets
+        async function fetchData() {
+            const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&range=${encodeURIComponent(RANGE)}`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Błąd sieci');
+                const csvText = await response.text();
+                return parseCSV(csvText);
+            } catch (error) {
+                console.error('Błąd podczas pobierania danych:', error);
+                showError('Nie udało się pobrać danych. Spróbuj ponownie później.');
+                return [];
+            }
+        }
+        
+        // Parsowanie danych CSV
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const result = [];
+            
+            for (let i = 1; i < lines.length; i++) { // Pomijamy nagłówek
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const values = [];
+                let current = '';
+                let inQuotes = false;
+                
+                for (let j = 0; j < line.length; j++) {
+                    const char = line[j];
+                    
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        values.push(current);
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                
+                values.push(current);
+                
+                if (values.length >= 2) {
+                    const dateStr = values[0].trim();
+                    const answer = values[1].trim().toLowerCase();
+                    
+                    if (dateStr && (answer === 'tak' || answer === 'nie')) {
+                        result.push({
+                            date: dateStr,
+                            answer: answer
+                        });
+                    }
+                }
+            }
+            
+            return result;
+        }
+        
+        // Przygotowanie danych kalendarza
+        function prepareCalendarData(data) {
+            allData = data; // Zapisujemy wszystkie dane do użycia później
+            
+            // Grupowanie danych po miesiącach
+            const monthsData = {};
+            
+            data.forEach(entry => {
+                const date = new Date(entry.date);
+                if (isNaN(date.getTime())) return;
+                
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const monthKey = `${year}-${month}`;
+                
+                if (!monthsData[monthKey]) {
+                    monthsData[monthKey] = {
+                        year: year,
+                        month: month,
+                        days: {}
+                    };
+                }
+                
+                monthsData[monthKey].days[date.getDate()] = entry.answer;
+            });
+            
+            // Sortowanie miesięcy
+            allMonthsData = Object.values(monthsData).sort((a, b) => {
+                return a.year === b.year ? a.month - b.month : a.year - b.year;
+            });
+            
+            // Ustawienie aktualnego miesiąca na ostatni (najnowszy)
+            currentMonthIndex = allMonthsData.length - 1;
+            
+            // Obliczanie aktualnej serii
+            calculateStreak(data);
+            
+            // Wyświetlenie aktualnego miesiąca
+            displayCurrentMonth();
+            
+            // Utworzenie selektora daty
+            createDateSelector();
+            
+            // Obliczanie i wyświetlanie statystyk
+            displayStats(data);
+        }
+        
+        // Tworzenie selektora daty
+        function createDateSelector() {
+            const container = document.getElementById('date-selector');
+            container.innerHTML = '';
+            
+            if (allMonthsData.length === 0) return;
+            
+            // Dropdown dla roku
+            const yearSelect = document.createElement('select');
+            yearSelect.className = 'date-dropdown';
+            yearSelect.id = 'year-select';
+            
+            // Dropdown dla miesiąca
+            const monthSelect = document.createElement('select');
+            monthSelect.className = 'date-dropdown';
+            monthSelect.id = 'month-select';
+            
+            // Zbieranie unikalnych lat
+            const years = [...new Set(allMonthsData.map(m => m.year))].sort();
+            
+            // Dodawanie opcji lat
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+            
+            // Funkcja aktualizująca miesiące na podstawie wybranego roku
+            const updateMonths = () => {
+                const selectedYear = parseInt(yearSelect.value);
+                
+                // Czyszczenie dropdown miesiąca
+                monthSelect.innerHTML = '';
+                
+                // Filtrowanie miesięcy dla wybranego roku
+                const monthsForYear = allMonthsData
+                    .filter(m => m.year === selectedYear)
+                    .map(m => m.month);
+                
+                // Dodawanie opcji miesięcy
+                monthsForYear.forEach(month => {
+                    const option = document.createElement('option');
+                    option.value = month;
+                    option.textContent = new Date(selectedYear, month, 1).toLocaleDateString('pl-PL', { month: 'long' });
+                    monthSelect.appendChild(option);
+                });
+            };
+            
+            // Przycisk do przejścia do wybranej daty
+            const goToDateBtn = document.createElement('button');
+            goToDateBtn.className = 'go-to-date-btn';
+            goToDateBtn.textContent = 'Przejdź';
+            goToDateBtn.onclick = () => {
+                const selectedYear = parseInt(yearSelect.value);
+                const selectedMonth = parseInt(monthSelect.value);
+                
+                // Znajdowanie indeksu wybranego miesiąca
+                const index = allMonthsData.findIndex(m => 
+                    m.year === selectedYear && m.month === selectedMonth
+                );
+                
+                if (index !== -1) {
+                    currentMonthIndex = index;
+                    displayCurrentMonth();
+                }
+            };
+            
+            // Ustawienie domyślnego roku na rok bieżącego miesiąca
+            const currentMonthData = allMonthsData[currentMonthIndex];
+            yearSelect.value = currentMonthData.year;
+            
+            // Aktualizacja miesięcy i ustawienie domyślnego miesiąca
+            updateMonths();
+            monthSelect.value = currentMonthData.month;
+            
+            // Dodanie event listenera do aktualizacji miesięcy przy zmianie roku
+            yearSelect.addEventListener('change', updateMonths);
+            
+            // Dodanie elementów do kontenera
+            container.appendChild(yearSelect);
+            container.appendChild(monthSelect);
+            container.appendChild(goToDateBtn);
+        }
+        
+        // Wyświetlanie aktualnego miesiąca
+        function displayCurrentMonth() {
+            const container = document.getElementById('calendar-container');
+            container.innerHTML = '';
+            
+            if (allMonthsData.length === 0) {
+                container.innerHTML = '<div class="error">Brak danych do wyświetlenia</div>';
+                return;
+            }
+            
+            // Dodanie nawigacji po miesiącach
+            const navContainer = document.createElement('div');
+            navContainer.className = 'month-navigation';
+            
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'month-nav-btn';
+            prevBtn.innerHTML = '&lt;';
+            prevBtn.disabled = currentMonthIndex <= 0;
+            prevBtn.onclick = () => {
+                if (currentMonthIndex > 0) {
+                    currentMonthIndex--;
+                    displayCurrentMonth();
+                    updateDateSelector();
+                }
+            };
+            
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'month-nav-btn';
+            nextBtn.innerHTML = '&gt;';
+            nextBtn.disabled = currentMonthIndex >= allMonthsData.length - 1;
+            nextBtn.onclick = () => {
+                if (currentMonthIndex < allMonthsData.length - 1) {
+                    currentMonthIndex++;
+                    displayCurrentMonth();
+                    updateDateSelector();
+                }
+            };
+            
+            const monthTitle = document.createElement('div');
+            monthTitle.className = 'month-title';
+            const currentMonthData = allMonthsData[currentMonthIndex];
+            monthTitle.textContent = new Date(currentMonthData.year, currentMonthData.month, 1).toLocaleDateString('pl-PL', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            
+            navContainer.appendChild(prevBtn);
+            navContainer.appendChild(monthTitle);
+            navContainer.appendChild(nextBtn);
+            
+            container.appendChild(navContainer);
+            
+            // Tworzenie kalendarza dla aktualnego miesiąca
+            const calendarContainer = document.createElement('div');
+            calendarContainer.className = 'calendar';
+            
+            // Nagłówki dni tygodnia
+            const daysOfWeek = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'So', 'Nd'];
+            daysOfWeek.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'day day-header';
+                dayHeader.textContent = day;
+                calendarContainer.appendChild(dayHeader);
+            });
+            
+            // Puste komórki na początek miesiąca
+            const firstDay = new Date(currentMonthData.year, currentMonthData.month, 1).getDay();
+            const offset = firstDay === 0 ? 6 : firstDay - 1; // Dostosowanie dla niedzieli
+            
+            for (let i = 0; i < offset; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'day';
+                calendarContainer.appendChild(emptyDay);
+            }
+            
+            // Dni miesiąca
+            const daysInMonth = new Date(currentMonthData.year, currentMonthData.month + 1, 0).getDate();
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day';
+                dayElement.textContent = day;
+                
+                if (currentMonthData.days[day]) {
+                    dayElement.classList.add(currentMonthData.days[day] === 'tak' ? 'yes' : 'no');
+                }
+                
+                calendarContainer.appendChild(dayElement);
+            }
+            
+            container.appendChild(calendarContainer);
+        }
+        
+        // Aktualizacja selektora daty po zmianie miesiąca
+        function updateDateSelector() {
+            const yearSelect = document.getElementById('year-select');
+            const monthSelect = document.getElementById('month-select');
+            
+            if (!yearSelect || !monthSelect) return;
+            
+            const currentMonthData = allMonthsData[currentMonthIndex];
+            
+            // Aktualizacja wybranego roku
+            yearSelect.value = currentMonthData.year;
+            
+            // Aktualizacja opcji miesięcy
+            const monthsForYear = allMonthsData
+                .filter(m => m.year === currentMonthData.year)
+                .map(m => m.month);
+            
+            // Czyszczenie dropdown miesiąca
+            monthSelect.innerHTML = '';
+            
+            // Dodawanie opcji miesięcy
+            monthsForYear.forEach(month => {
+                const option = document.createElement('option');
+                option.value = month;
+                option.textContent = new Date(currentMonthData.year, month, 1).toLocaleDateString('pl-PL', { month: 'long' });
+                monthSelect.appendChild(option);
+            });
+            
+            // Aktualizacja wybranego miesiąca
+            monthSelect.value = currentMonthData.month;
+        }
+        
+        // Obliczanie aktualnej serii "Nie" (teraz to są dobre odpowiedzi)
+        function calculateStreak(data) {
+            let currentStreak = 0;
+            let maxStreak = 0;
+            let today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Sortowanie danych od najnowszych do najstarszych
+            const sortedData = [...data].sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                return dateB - dateA;
+            });
+            
+            for (const entry of sortedData) {
+                const date = new Date(entry.date);
+                if (isNaN(date.getTime())) continue;
+                
+                date.setHours(0, 0, 0, 0);
+                
+                // Pomijamy przyszłe daty
+                if (date > today) continue;
+                
+                // Zmieniono warunek - teraz "nie" jest dobrą odpowiedzią
+                if (entry.answer === 'nie') {
+                    currentStreak++;
+                    if (currentStreak > maxStreak) {
+                        maxStreak = currentStreak;
+                    }
+                } else {
+                    break; // Seria przerwana
+                }
+            }
+            
+            // Dodanie ikon ognia w zależności od długości serii
+            const currentFireIcons = getFireIcons(currentStreak);
+            const maxFireIcons = getFireIcons(maxStreak);
+            
+            const streakContainer = document.getElementById('streak-container');
+            streakContainer.innerHTML = `
+                <div class="streak-item">Aktualna seria <strong>${currentStreak} ${currentFireIcons}</strong> dni</div>
+                <div class="streak-item">Najdłuższa seria <strong>${maxStreak} ${maxFireIcons}</strong> dni</div>
+            `;
+        }
+        
+        // Generowanie ikon ognia w zależności od długości serii
+        function getFireIcons(streak) {
+            if (streak === 0) return '';
+            
+            let fireCount = 1;
+            if (streak >= 7) fireCount = 2;
+            if (streak >= 14) fireCount = 3;
+            if (streak >= 30) fireCount = 4;
+            if (streak >= 60) fireCount = 5;
+            
+            let icons = '';
+            for (let i = 0; i < fireCount; i++) {
+                icons += '<span class="fire-icon">🔥</span>';
+            }
+            
+            return icons;
+        }
+        
+        // Obliczanie i wyświetlanie statystyk - odwrócone znaczenie odpowiedzi
+        function displayStats(data) {
+            let successCount = 0;
+            let failureCount = 0;
+            
+            data.forEach(entry => {
+                // Zmieniono warunki - teraz "nie" jest sukcesem, a "tak" porażką
+                if (entry.answer === 'nie') {
+                    successCount++;
+                } else if (entry.answer === 'tak') {
+                    failureCount++;
+                }
+            });
+            
+            const totalDays = successCount + failureCount;
+            const successRate = totalDays > 0 ? Math.round((successCount / totalDays) * 100) : 0;
+            
+            const statsContainer = document.getElementById('stats-counter');
+            statsContainer.innerHTML = `
+                <div class="stats-item success">Udane: <span>${successCount}</span></div>
+                <div class="stats-item failure">Nieudane: <span>${failureCount}</span></div>
+                <div class="stats-item">Skuteczność: <span>${successRate}%</span></div>
+            `;
+        }
+        
+        // Wyświetlanie błędu
+        function showError(message) {
+            const container = document.getElementById('calendar-container');
+            container.innerHTML = `<div class="error">${message}</div>`;
+        }
+        
+        // Ładowanie danych
+        async function loadData() {
+            const container = document.getElementById('calendar-container');
+            container.innerHTML = '<div class="loading">Ładowanie danych...</div>';
+            
+            try {
+                const data = await fetchData();
+                prepareCalendarData(data);
+            } catch (error) {
+                console.error('Błąd:', error);
+                showError('Wystąpił błąd podczas przetwarzania danych.');
+            }
+        }
+        
+        // Inicjalizacja
+        document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>
+
+
